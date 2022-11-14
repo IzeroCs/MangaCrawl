@@ -74,7 +74,7 @@ const listChapterRequest = (url: string): Promise<Comic> => {
             const thumbRegex  = /<div class="detail-info">.+?<div class="col-xs-4 col-image">.+?src="(.+?)".+?<\/div>/
             const infoRegex   = /<div class="detail-info">.+?<ul class="list-info">(.+?)<\/ul>/g
             const listRegex   = /<div class="list-chapter" id="nt_listchapter">.+?<nav>.*?<ul>(.+?)<\/ul>/g
-            const entryRegex  = /<li class="row.+?<a href="(.+?)" data-id="\d+">Chapter\s+([0-9.]+):?\s*-?\s*(.*?)<\/a>.+?<\/li>/g
+            const entryRegex  = /<li class="row.+?<a href="(.+?)" data-id="\d+">Chapter\s+([0-9.]+):?\s*-?\s*(.*?)\.?<\/a>.+?<\/li>/g
             const [ , title ] = titleRegex.exec(source) || ["", ""]
             const [ , thumb ] = thumbRegex.exec(source) || ["", ""]
             const [ , info ]  = infoRegex.exec(source)  || ["", ""]
@@ -131,8 +131,10 @@ const listImageRequest = (comic: Comic, chapter: ChapterEntry): Promise<Array<Im
             const [, list] = listRegex.exec(source) || [ "", "" ]
             const images = new Array<ImageEntry>()
 
-            XRegExp.forEach(list, imgRegex, ([ , original, cdn ], index) =>
-                images.push({ index: index, original: urlScheme(original), cdn: urlScheme(cdn) }))
+            XRegExp.forEach(list, imgRegex, ([ , original, cdn ], index) => {
+                if (!original.endsWith("637987816776253982.jpg") && !cdn.endsWith("637987816776253982.jpg"))
+                    images.push({ index: index, original: urlScheme(original), cdn: urlScheme(cdn) })
+            })
 
             if (typeof images.length === "undefined" || images.length <= 0)
                 reject(new Error("Not found list image in chapter: " + chapter.uri))
@@ -274,8 +276,10 @@ const writeComicInfo = (comic: Comic, chapter: ChapterEntry): Promise<boolean> =
     })
 }
 
-const url = "https://www.nettruyenin.com/truyen-tranh/vi-so-dau-nen-em-tang-max-vit-19364"
-// const url = "https://www.nettruyenme.com/truyen-tranh/toi-da-chuyen-sinh-thanh-slime-100620"
+// const url = "https://www.nettruyenin.com/truyen-tranh/vi-so-dau-nen-em-tang-max-vit-19364"
+// const url = "https://www.nettruyenin.com/truyen-tranh/toi-da-chuyen-sinh-thanh-slime-100620"
+const url = "https://www.nettruyenin.com/truyen-tranh/tsuki-ga-michibiku-isekai-douchuu-107050"
+const ignore = 0
 
 listChapterRequest(url)
     .then(async comic => {
@@ -294,12 +298,15 @@ listChapterRequest(url)
             chapter = comic.chapters[i]
 
             console.log("Request list image chap:", chapter.chap)
-            const images = await listImageRequest(comic, chapter)
-            await writeComicInfo(comic, chapter)
 
-            for (let k = 0; k < images.length; ++k) {
-                console.log("Chap", chapter.chap, "download image:", images[k].original)
-                await downloadImage(comic, chapter, images[k])
+            if (chapter.chap > ignore) {
+                const images = await listImageRequest(comic, chapter)
+                await writeComicInfo(comic, chapter)
+
+                for (let k = 0; k < images.length; ++k) {
+                    console.log("Chap", chapter.chap, "download image:", images[k].original)
+                    await downloadImage(comic, chapter, images[k])
+                }
             }
         }
     }).catch(err => console.log(err))
