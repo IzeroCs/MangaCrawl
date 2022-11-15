@@ -153,7 +153,8 @@ const chapName = (chapter: ChapterEntry): string => {
     if (chapter.label.length <= 0)
         return prefix + chapter.chap
 
-    return prefix + chapter.chap + labelSub + chapter.label
+    // return prefix + chapter.chap + labelSub + chapter.label
+    return prefix + chapter.chap
 }
 
 const storagePath = (comic: Comic): string =>
@@ -278,8 +279,9 @@ const writeComicInfo = (comic: Comic, chapter: ChapterEntry): Promise<boolean> =
 
 // const url = "https://www.nettruyenin.com/truyen-tranh/vi-so-dau-nen-em-tang-max-vit-19364"
 // const url = "https://www.nettruyenin.com/truyen-tranh/toi-da-chuyen-sinh-thanh-slime-100620"
-const url = "https://www.nettruyenin.com/truyen-tranh/tsuki-ga-michibiku-isekai-douchuu-107050"
-const ignore = 0
+// const url = "https://www.nettruyenin.com/truyen-tranh/tsuki-ga-michibiku-isekai-douchuu-107050"
+const url = "https://www.nettruyenin.com/truyen-tranh/drstone-hoi-sinh-the-gioi-158523"
+const ignore = 1000
 
 listChapterRequest(url)
     .then(async comic => {
@@ -299,7 +301,7 @@ listChapterRequest(url)
 
             console.log("Request list image chap:", chapter.chap)
 
-            if (chapter.chap > ignore) {
+            if (chapter.chap < ignore) {
                 const images = await listImageRequest(comic, chapter)
                 await writeComicInfo(comic, chapter)
 
