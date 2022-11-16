@@ -97,7 +97,7 @@ const listChapterRequest = (url: string): Promise<Comic> => {
             if (typeof chapters.length === "undefined" || chapters.length <= 0) {
                 reject(new Error("Not found list chapter in url " + url))
             } else {
-                let authorValue = author
+                let authorValue = author.replace(/<a href=.+?>(.+?)</a>/gi, "$1")
                 let statusValue = 0
 
                 if (author == AUTHOR_STATUS_UPDATING)
