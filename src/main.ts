@@ -1,7 +1,7 @@
 import axios, { AxiosResponse } from "axios"
 import cloudscraper from "cloudscraper"
 import XRegExp from "xregexp"
-import xmlbuilder from "xmlbuilder"
+import xmlbuilder, { stringWriter } from "xmlbuilder"
 import fs from "fs"
 import path from "path"
 
@@ -94,10 +94,13 @@ const listChapterRequest = (url: string): Promise<Comic> => {
             XRegExp.forEach(list, entryRegex, ([ , uri, chap, label ]) =>
                 chapters.push({ chap: Number.parseFloat(chap), uri: uri, label: label }))
 
+            genre.sort((a: string, b: string) => (a > b ? 1 : -1))
+            chapters.sort((a: ChapterEntry, b: ChapterEntry) => (a.chap > b.chap ? 1 : -1))
+
             if (typeof chapters.length === "undefined" || chapters.length <= 0) {
                 reject(new Error("Not found list chapter in url " + url))
             } else {
-                let authorValue = author
+                let authorValue = author.replace(/<a href=.+?>(.+?)<\/a>/gi, "$1")
                 let statusValue = 0
 
                 if (author == AUTHOR_STATUS_UPDATING)
@@ -109,8 +112,8 @@ const listChapterRequest = (url: string): Promise<Comic> => {
                     statusValue = 2
 
                 resolve({
-                    title: title, thumb: urlScheme(thumb), author: authorValue, writer: author, penciller: author,
-                    inker: author, genre: genre, chapters: chapters, seo: seo, status: statusValue, description: desc
+                    title: title, thumb: urlScheme(thumb), author: authorValue, writer: authorValue, penciller: authorValue,
+                    inker: authorValue, genre: genre, chapters: chapters, seo: seo, status: statusValue, description: desc
                 })
             }
         }).catch((err: Error) => console.error(err))
@@ -153,7 +156,6 @@ const chapName = (chapter: ChapterEntry): string => {
     if (chapter.label.length <= 0)
         return prefix + chapter.chap
 
-    // return prefix + chapter.chap + labelSub + chapter.label
     return prefix + chapter.chap
 }
 
@@ -278,9 +280,9 @@ const writeComicInfo = (comic: Comic, chapter: ChapterEntry): Promise<boolean> =
 }
 
 // const url = "https://www.nettruyenin.com/truyen-tranh/vi-so-dau-nen-em-tang-max-vit-19364"
-// const url = "https://www.nettruyenin.com/truyen-tranh/toi-da-chuyen-sinh-thanh-slime-100620"
+const url = "https://www.nettruyenin.com/truyen-tranh/toi-da-chuyen-sinh-thanh-slime-100620"
 // const url = "https://www.nettruyenin.com/truyen-tranh/tsuki-ga-michibiku-isekai-douchuu-107050"
-const url = "https://www.nettruyenin.com/truyen-tranh/drstone-hoi-sinh-the-gioi-158523"
+// const url = "https://www.nettruyenin.com/truyen-tranh/drstone-hoi-sinh-the-gioi-158523"
 const ignore = 1000
 
 listChapterRequest(url)
@@ -305,10 +307,10 @@ listChapterRequest(url)
                 const images = await listImageRequest(comic, chapter)
                 await writeComicInfo(comic, chapter)
 
-                for (let k = 0; k < images.length; ++k) {
-                    console.log("Chap", chapter.chap, "download image:", images[k].original)
-                    await downloadImage(comic, chapter, images[k])
-                }
+                // for (let k = 0; k < images.length; ++k) {
+                //    console.log("Chap", chapter.chap, "download image:", images[k].original)
+                //    await downloadImage(comic, chapter, images[k])
+                // }
             }
         }
     }).catch(err => console.log(err))
