@@ -279,11 +279,13 @@ const writeComicInfo = (comic: Comic, chapter: ChapterEntry): Promise<boolean> =
     })
 }
 
-// const url = "https://www.nettruyenin.com/truyen-tranh/vi-so-dau-nen-em-tang-max-vit-19364"
-const url = "https://www.nettruyenin.com/truyen-tranh/toi-da-chuyen-sinh-thanh-slime-100620"
-// const url = "https://www.nettruyenin.com/truyen-tranh/tsuki-ga-michibiku-isekai-douchuu-107050"
+// const url = "https://www.nettruyentv.com/truyen-tranh/vi-so-dau-nen-em-tang-max-vit-193640"
+// const url = "https://www.nettruyenin.com/truyen-tranh/toi-da-chuyen-sinh-thanh-slime-100620"
+// const url = "https://www.nettruyentv.com/truyen-tranh/tsuki-ga-michibiku-isekai-douchuu-107050"
 // const url = "https://www.nettruyenin.com/truyen-tranh/drstone-hoi-sinh-the-gioi-158523"
-const ignore = 1000
+const url = "https://www.nettruyentv.com/truyen-tranh/su-troi-day-cua-anh-hung-khien-42150"
+// const url = "https://www.nettruyentv.com/truyen-tranh/mairimashita-iruma-kun-159850"
+const ignore = 0
 
 listChapterRequest(url)
     .then(async comic => {
@@ -303,14 +305,14 @@ listChapterRequest(url)
 
             console.log("Request list image chap:", chapter.chap)
 
-            if (chapter.chap < ignore) {
+            if (chapter.chap >= ignore) {
                 const images = await listImageRequest(comic, chapter)
                 await writeComicInfo(comic, chapter)
 
-                // for (let k = 0; k < images.length; ++k) {
-                //    console.log("Chap", chapter.chap, "download image:", images[k].original)
-                //    await downloadImage(comic, chapter, images[k])
-                // }
+                for (let k = 0; k < images.length; ++k) {
+                   console.log("Chap", chapter.chap, "download image:", images[k].original)
+                   await downloadImage(comic, chapter, images[k])
+                }
             }
         }
     }).catch(err => console.log(err))
