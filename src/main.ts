@@ -135,7 +135,7 @@ const listImageRequest = (comic: Comic, chapter: ChapterEntry): Promise<Array<Im
             const images = new Array<ImageEntry>()
 
             XRegExp.forEach(list, imgRegex, ([ , original, cdn ], index) => {
-                if (!original.endsWith("637987816776253982.jpg") && !cdn.endsWith("637987816776253982.jpg"))
+                if (!original.endsWith("638047952612608555.jpg") && !cdn.endsWith("638047952612608555.jpg"))
                     images.push({ index: index, original: urlScheme(original), cdn: urlScheme(cdn) })
             })
 
@@ -283,8 +283,12 @@ const writeComicInfo = (comic: Comic, chapter: ChapterEntry): Promise<boolean> =
 // const url = "https://www.nettruyenin.com/truyen-tranh/toi-da-chuyen-sinh-thanh-slime-100620"
 // const url = "https://www.nettruyentv.com/truyen-tranh/tsuki-ga-michibiku-isekai-douchuu-107050"
 // const url = "https://www.nettruyenin.com/truyen-tranh/drstone-hoi-sinh-the-gioi-158523"
-const url = "https://www.nettruyentv.com/truyen-tranh/su-troi-day-cua-anh-hung-khien-42150"
+// const url = "https://www.nettruyentv.com/truyen-tranh/su-troi-day-cua-anh-hung-khien-42150"
 // const url = "https://www.nettruyentv.com/truyen-tranh/mairimashita-iruma-kun-159850"
+// const url = "https://www.nettruyentv.com/truyen-tranh/tai-sinh-thanh-nhen-116580"
+const url = "https://www.nettruyentv.com/truyen-tranh/dao-quanh-ma-quoc-161920"
+// const url = "https://www.nettruyentv.com/truyen-tranh/cuoc-song-tra-on-cua-nang-rong-tohru-101240"
+// const url = "https://www.nettruyentv.com/truyen-tranh/toi-la-nhen-day-thi-sao-nao-cuoc-song-cua-4-chi-em-nhen-391770"
 const ignore = 0
 
 listChapterRequest(url)
