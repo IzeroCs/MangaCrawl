@@ -31,8 +31,8 @@ interface ChapterEntry {
 
 interface ImageEntry {
     index: number
-    original: string
-    cdn: string
+    original: string,
+    page: number
 }
 
 const http = axios.create({
@@ -130,13 +130,13 @@ const listImageRequest = (comic: Comic, chapter: ChapterEntry): Promise<Array<Im
                            .replace(/[']+/g, "\"")
 
             const listRegex = /<div class="reading-detail box_doc">(.+?)<div class="container">/g
-            const imgRegex = /<div id="page.+?<img.+?data-original="(.+?)"\s+data-cdn="(.+?)"/g
+            const imgRegex = /<div id="page.+?<img.+?data-index="(\d+)".+?data-original="(.+?)"/g
             const [, list] = listRegex.exec(source) || [ "", "" ]
             const images = new Array<ImageEntry>()
 
-            XRegExp.forEach(list, imgRegex, ([ , original, cdn ], index) => {
-                if (!original.endsWith("638047952612608555.jpg") && !cdn.endsWith("638047952612608555.jpg"))
-                    images.push({ index: index, original: urlScheme(original), cdn: urlScheme(cdn) })
+            XRegExp.forEach(list, imgRegex, ([ , page, original ], index) => {
+                if (!original.endsWith("638047952612608555.jpg"))
+                    images.push({ index: index, original: urlScheme(original), page: parseInt(page) })
             })
 
             if (typeof images.length === "undefined" || images.length <= 0)
@@ -187,22 +187,21 @@ const downloadImage = (comic: Comic, chapter: ChapterEntry, image: ImageEntry): 
     return new Promise((resolve, reject) => {
         http.get(image.original, { responseType: "stream" })
             .then(async res => resolve(await writeImage(comic, chapter, image.original, image, res)))
-            .catch(err => {
-                if (err.response && err.response.status != 200) {
-                    http.get(image.cdn, { responseType: "stream" })
-                        .then(async res => resolve(await writeImage(comic, chapter, image.cdn, image, res)))
-                        .catch(err => reject(err))
-                } else {
-                    reject(err)
-                }
-            })
+            .catch(err => reject(err))
     })
 }
 
 const writeImage = (comic: Comic, chapter: ChapterEntry, url: string, image: ImageEntry, res: AxiosResponse): Promise<boolean> => {
     return new Promise((resolve, reject) => {
-        const nameRegex = /(\d+)[a-zA-Z0-9-_]*(.jpg|.jpeg|.png|.bmp|.webp)(\?.+?)*/gi
-        const [ , num, format ] = nameRegex.exec(urlFilename(url)) || ["", "", ""]
+        const formatRegex = /\/.+?(.jpg|.jpeg|.png|.bmp|.webp).*?$/gi
+        const [, format ] = formatRegex.exec(url) || ["", ""]
+        let num = image.page.toString();
+
+        if (num.length <= 1)
+            num = `00${num}`
+        else if (num.length <= 2)
+            num = `0${num}`
+
         const filepath = path.join(storageChapPath(comic, chapter), num + format)
 
         res.data.pipe(fs.createWriteStream(filepath))
@@ -279,16 +278,20 @@ const writeComicInfo = (comic: Comic, chapter: ChapterEntry): Promise<boolean> =
     })
 }
 
-// const url = "https://www.nettruyentv.com/truyen-tranh/vi-so-dau-nen-em-tang-max-vit-193640"
-// const url = "https://www.nettruyenin.com/truyen-tranh/toi-da-chuyen-sinh-thanh-slime-100620"
-// const url = "https://www.nettruyentv.com/truyen-tranh/tsuki-ga-michibiku-isekai-douchuu-107050"
+// const url = "https://www.nettruyenmin.com/truyen-tranh/vi-so-dau-nen-em-tang-max-vit-193640" /* 24 */
+// const url = "https://www.nettruyenmin.com/truyen-tranh/toi-da-chuyen-sinh-thanh-slime-100620" /* 102 */
+// const url = "https://www.nettruyenmin.com/truyen-tranh/tsuki-ga-michibiku-isekai-douchuu-107050" /* 79 */
 // const url = "https://www.nettruyenin.com/truyen-tranh/drstone-hoi-sinh-the-gioi-158523"
-// const url = "https://www.nettruyentv.com/truyen-tranh/su-troi-day-cua-anh-hung-khien-42150"
-// const url = "https://www.nettruyentv.com/truyen-tranh/mairimashita-iruma-kun-159850"
-// const url = "https://www.nettruyentv.com/truyen-tranh/tai-sinh-thanh-nhen-116580"
-const url = "https://www.nettruyentv.com/truyen-tranh/dao-quanh-ma-quoc-161920"
-// const url = "https://www.nettruyentv.com/truyen-tranh/cuoc-song-tra-on-cua-nang-rong-tohru-101240"
-// const url = "https://www.nettruyentv.com/truyen-tranh/toi-la-nhen-day-thi-sao-nao-cuoc-song-cua-4-chi-em-nhen-391770"
+// const url = "https://www.nettruyenmin.com/truyen-tranh/su-troi-day-cua-anh-hung-khien-42150" /* 91 */
+// const url = "https://www.nettruyenmin.com/truyen-tranh/mairimashita-iruma-kun-159850" /* 279 */
+// const url = "https://www.nettruyenmin.com/truyen-tranh/tai-sinh-thanh-nhen-116580" /* 122 */
+// const url = "https://www.nettruyenmin.com/truyen-tranh/dao-quanh-ma-quoc-161920" /* End */
+// const url = "https://www.nettruyenmin.com/truyen-tranh/toi-la-nhen-day-thi-sao-nao-cuoc-song-cua-4-chi-em-nhen-391770" /* End */
+// const url = "https://www.nettruyenmin.com/truyen-tranh/weak-5000-year-old-vegan-dragon-183010" /* End */
+// const url = "https://www.nettruyenmin.com/truyen-tranh/cuoc-song-tra-on-cua-nang-rong-tohru-101240" /* 125 */
+// const url = "https://www.nettruyenmin.com/truyen-tranh/kuma-kuma-kuma-bear-183720"
+const url = "https://www.nettruyenmin.com/truyen-tranh/dao-hai-tac-91690"
+
 const ignore = 0
 
 listChapterRequest(url)
