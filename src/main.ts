@@ -289,9 +289,10 @@ const writeComicInfo = (comic: Comic, chapter: ChapterEntry): Promise<boolean> =
 // const url = "https://www.nettruyenmin.com/truyen-tranh/toi-la-nhen-day-thi-sao-nao-cuoc-song-cua-4-chi-em-nhen-391770" /* End */
 // const url = "https://www.nettruyenmin.com/truyen-tranh/weak-5000-year-old-vegan-dragon-183010" /* End */
 // const url = "https://www.nettruyenmin.com/truyen-tranh/cuoc-song-tra-on-cua-nang-rong-tohru-101240" /* 125 */
-// const url = "https://www.nettruyenmin.com/truyen-tranh/kuma-kuma-kuma-bear-183720"
-const url = "https://www.nettruyenmin.com/truyen-tranh/dao-hai-tac-91690"
-
+// const url = "https://www.nettruyenmin.com/truyen-tranh/kuma-kuma-kuma-bear-183720" /* 64 */
+// const url = "https://www.nettruyenmin.com/truyen-tranh/dao-hai-tac-91690"
+// const url = "https://www.nettruyenmin.com/truyen-tranh/chuyen-sinh-thanh-kiem-152770" /* 58 */
+// const url = "https://www.nettruyenmin.com/truyen-tranh/gaikotsu-kishi-sama-tadaima-isekai-e-o-dekake-ch-161440" /* 52 */
 const ignore = 0
 
 listChapterRequest(url)
