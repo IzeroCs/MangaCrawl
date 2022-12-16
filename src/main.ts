@@ -293,6 +293,10 @@ const writeComicInfo = (comic: Comic, chapter: ChapterEntry): Promise<boolean> =
 // const url = "https://www.nettruyenmin.com/truyen-tranh/dao-hai-tac-91690"
 // const url = "https://www.nettruyenmin.com/truyen-tranh/chuyen-sinh-thanh-kiem-152770" /* 58 */
 // const url = "https://www.nettruyenmin.com/truyen-tranh/gaikotsu-kishi-sama-tadaima-isekai-e-o-dekake-ch-161440" /* 52 */
+// const url = "https://www.nettruyenup.com/truyen-tranh/isekai-yakkyoku-153320" // Hieu Thuoc Di Gioi
+// const url = "https://www.nettruyenup.com/truyen-tranh/tao-muon-tro-thanh-chua-te-bong-toi-207081"
+// const url = "https://www.nettruyenking.com/truyen-tranh/kham-pha-the-gioi-game-7010"
+
 const ignore = 0
 
 listChapterRequest(url)
