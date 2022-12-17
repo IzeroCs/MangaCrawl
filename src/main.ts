@@ -286,7 +286,7 @@ const writeComicInfo = (comic: Comic, chapter: ChapterEntry): Promise<boolean> =
 // const url = "https://www.nettruyenmin.com/truyen-tranh/mairimashita-iruma-kun-159850" /* 279 */
 // const url = "https://www.nettruyenmin.com/truyen-tranh/tai-sinh-thanh-nhen-116580" /* 122 */
 // const url = "https://www.nettruyenmin.com/truyen-tranh/dao-quanh-ma-quoc-161920" /* End */
-// const url = "https://www.nettruyenmin.com/truyen-tranh/toi-la-nhen-day-thi-sao-nao-cuoc-song-cua-4-chi-em-nhen-391770" /* End */
+const url = "https://www.nettruyenking.com/truyen-tranh/toi-la-nhen-day-thi-sao-nao-cuoc-song-cua-4-chi-em-nhen-391770" /* End */
 // const url = "https://www.nettruyenmin.com/truyen-tranh/weak-5000-year-old-vegan-dragon-183010" /* End */
 // const url = "https://www.nettruyenmin.com/truyen-tranh/cuoc-song-tra-on-cua-nang-rong-tohru-101240" /* 125 */
 // const url = "https://www.nettruyenmin.com/truyen-tranh/kuma-kuma-kuma-bear-183720" /* 64 */
