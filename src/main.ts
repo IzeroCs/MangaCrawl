@@ -316,6 +316,7 @@ const requestList = async (array: Array<ItemList>) => {
                     if (chapter.chap > item.chap) {
                         let logRequestStr = colors.blue("Status: ") +
                             colors.green("Request list image chap ") + colors.magenta.bold(chapter.chap.toString()) +
+                            colors.cyan("/") + colors.red.bold(comic.chapters[comic.chapters.length - 1].chap.toString()) +
                             colors.cyan(" => ") + colors.yellow.bold("$current") +
                             colors.cyan("/") + colors.red.bold("$total") + colors.cyan(" images")
 
@@ -337,10 +338,14 @@ const requestList = async (array: Array<ItemList>) => {
                         list[i].chap = chapter.chap
                         await writeJsonList(list)
                     }
-
                 }
+
+                if (hasChapterNew)
+                    console.log(colors.blue("End: ") + colors.green("There's a new chapter"))
+                else
+                    console.log(colors.blue("End: ") + colors.gray("No new chapters yet"))
             } else {
-                console.error("Status: Error request list chapter")
+                console.error(colors.blue("Status: ") + colors.red("Error request list chapter"))
             }
         }
 
