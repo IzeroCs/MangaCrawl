@@ -6,10 +6,13 @@ import fs from "fs"
 import path, { resolve } from "path"
 import colors from "colors"
 import dotenv from "dotenv"
+import yaml from "yaml"
 
 const AUTHOR_STATUS_UPDATING = "Đang cập nhật"
 const COMIC_STATUS_COMPLETED = "Hoàn thành"
 const COMIC_STATUS_ONGOING = "Đang tiến hành"
+
+const DATA_SERIALIZATION = yaml
 
 interface Comic {
     seo: string
@@ -39,8 +42,8 @@ interface ImageEntry {
 
 dotenv.config()
 
-const fileListPath = path.resolve(__dirname, "..", "list.json")
-const fileListLockPath = path.resolve(__dirname, "..", "list-lock.json")
+const fileListPath = path.resolve(__dirname, "..", "list.yaml")
+const fileListLockPath = path.resolve(__dirname, "..", "list-lock.yaml")
 const http = axios.create({
     baseURL: "https://www.nettruyenme.com",
     withCredentials: false,
@@ -284,10 +287,10 @@ const writeComicInfo = (comic: Comic, chapter: ChapterEntry): Promise<boolean> =
     })
 }
 
-const writeJsonList = (list: Array<ItemList>): Promise<Boolean> => {
+const writeListLock = (list: Array<ItemList>): Promise<Boolean> => {
     return new Promise((resolve, reject) => {
         fs.writeFile(fileListLockPath,
-            JSON.stringify(list, null, 2), () => resolve(true))
+            DATA_SERIALIZATION.stringify(list, null, 2), () => resolve(true))
     })
 }
 
@@ -340,7 +343,7 @@ const requestList = async (array: Array<ItemList>) => {
 
                         process.stdout.write("\n")
                         list[i].chap = chapter.chap
-                        await writeJsonList(list)
+                        await writeListLock(list)
                     }
                 }
 
@@ -368,10 +371,10 @@ const baseURL = process.env.BASE_URL + "/truyen-tranh"
 let listRead: Array<ItemList>
 
 try {
-    listRead = JSON.parse(fs
+    listRead = DATA_SERIALIZATION.parse(fs
         .readFileSync(fileListLockPath).toString())
 } catch (e) {
-    listRead = JSON.parse(fs
+    listRead = DATA_SERIALIZATION.parse(fs
         .readFileSync(fileListPath).toString())
 }
 
