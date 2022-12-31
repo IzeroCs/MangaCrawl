@@ -5,6 +5,7 @@ import xmlbuilder, { stringWriter } from "xmlbuilder"
 import fs from "fs"
 import path, { resolve } from "path"
 import colors from "colors"
+import dotenv from "dotenv"
 
 const AUTHOR_STATUS_UPDATING = "Đang cập nhật"
 const COMIC_STATUS_COMPLETED = "Hoàn thành"
@@ -36,7 +37,10 @@ interface ImageEntry {
     page: number
 }
 
+dotenv.config()
+
 const fileListPath = path.resolve(__dirname, "..", "list.json")
+const fileListLockPath = path.resolve(__dirname, "..", "list-lock.json")
 const http = axios.create({
     baseURL: "https://www.nettruyenme.com",
     withCredentials: false,
@@ -282,7 +286,7 @@ const writeComicInfo = (comic: Comic, chapter: ChapterEntry): Promise<boolean> =
 
 const writeJsonList = (list: Array<ItemList>): Promise<Boolean> => {
     return new Promise((resolve, reject) => {
-        fs.writeFile(fileListPath,
+        fs.writeFile(fileListLockPath,
             JSON.stringify(list, null, 2), () => resolve(true))
     })
 }
@@ -360,35 +364,15 @@ interface ItemList {
     ignore?: boolean
 }
 
-const baseURL = "https://www.nettruyenup.com/truyen-tranh"
-const defaultList: Array<ItemList> = [
-    { title: "Vì Sợ Đau Nên Em Tăng Max VIT", url: "vi-so-dau-nen-em-tang-max-vit-193640", chap: 24 },
-    { title: "Tôi Đã Chuyển Sinh Thành Slime", url: "toi-da-chuyen-sinh-thanh-slime-100620", chap: 102 },
-    { title: "Nguyệt Đạo Dị Giới", url: "tsuki-ga-michibiku-isekai-douchuu-107050", chap: 79 },
-    { title: "Sự Trỗi Dậy Của Anh Hùng Khiên", url: "su-troi-day-cua-anh-hung-khien-42150", chap: 91 },
-    { title: "Mairimashita! Iruma-Kun", url: "mairimashita-iruma-kun-159850", chap: 279 },
-    { title: "Tái Sinh Thành Nhện", url: "tai-sinh-thanh-nhen-116580", chap: 122 },
-    { title: "Dạo Quanh Ma Quốc", url: "dao-quanh-ma-quoc-161920", chap: 48 },
-    { title: "Tôi Là Nhện Đấy Thì Sao Nào?", url: "toi-la-nhen-day-thi-sao-nao-cuoc-song-cua-4-chi-em-nhen-391770", chap: 12 },
-    { title: "Rồng Thần 5000 Năm Tuổi Ăn Chay", url: "weak-5000-year-old-vegan-dragon-183010", chap: 23 },
-    { title: "Cuộc Sống Trả Ơn Của Nàng Rồng Tohru", url: "cuoc-song-tra-on-cua-nang-rong-tohru-101240", chap: 125 },
-    { title: "Cô Nàng Siêu Gấu", url: "kuma-kuma-kuma-bear-183720", chap: 64 },
-    { title: "Đảo Hải Tặc", url: "dao-hai-tac-91690", chap: 0, ignore: true },
-    { title: "DR.Stone - Hồi Sinh Thế Giới", url: "drstone-hoi-sinh-the-gioi-158523", chap: 0, ignore: true },
-    { title: "Ma Vương Xương", url: "gaikotsu-kishi-sama-tadaima-isekai-e-o-dekake-ch-161440", chap: 52 },
-    { title: "Chuyển Sinh Thành Kiếm", url: "chuyen-sinh-thanh-kiem-152770", chap: 58 },
-    { title: "Hiệu Thuốc Dị Giới", url: "isekai-yakkyoku-153320", chap: 0 },
-    { title: "Tao Muốn Trở Thành Chúa Tể Bóng Tối", url: "tao-muon-tro-thanh-chua-te-bong-toi-207081", chap: 0 },
-    { title: "Khám Phá Thế Giới Game", url: "kham-pha-the-gioi-game-7010", chap: 0 }
-]
-
+const baseURL = process.env.BASE_URL + "/truyen-tranh"
 let listRead: Array<ItemList>
 
 try {
     listRead = JSON.parse(fs
-        .readFileSync(fileListPath).toString())
+        .readFileSync(fileListLockPath).toString())
 } catch (e) {
-    listRead = defaultList
+    listRead = JSON.parse(fs
+        .readFileSync(fileListPath).toString())
 }
 
 requestList(listRead)
