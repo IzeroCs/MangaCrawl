@@ -1,7 +1,9 @@
     {
         "watch": [
+            "src",
             "dist"
         ],
-        "ext": ".js",
-        "ignore": []
+        "ext": ".js,.ts",
+        "ignore": [],
+        "exec": "ts-node ./src/main.ts"
     }
