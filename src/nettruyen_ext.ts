@@ -13,6 +13,7 @@ const COMIC_STATUS_ONGOING = "Đang tiến hành"
 export default class NetTruyenExt extends Extension {
     httpBaseUrl: string = "https://www.nettruyenme.com"
     httpReferer: string = "https://www.nettruyenme.com"
+    directoryStorage: string = "nettruyen"
 
     chapterTitleRegex(): ResultRegex {
         return /<h1 class="title-detail">(.+?)<\/h1>/g }
@@ -32,7 +33,7 @@ export default class NetTruyenExt extends Extension {
     infoStatusRegex(): ResultRegex {
         return /<li class="status.+?<p class="col-xs-8">(.+?)<\/p>/g }
 
-    infoKindListRegex(): ResultRegex {
+    infoGenreListRegex(): ResultRegex {
         return /<li class="kind.+?<p class="col-xs-8">(.+?)<\/p>/g }
 
     infoDescriptionRegex(): ResultRegex {

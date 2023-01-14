@@ -6,7 +6,7 @@ import cloudscraper from "cloudscraper"
 import yaml from "yaml"
 import xmlbuilder from "xmlbuilder"
 import { ItemList } from "./list"
-import { ChapterEntry, Comic } from "./extenstion"
+import { ChapterEntry, Comic, Extension } from './extenstion';
 
 const DATA_SERIALIZATION = yaml
 
@@ -14,7 +14,7 @@ export default class Info {
     private static fileListPath = path.resolve(__dirname, "..", "list.yaml")
     private static fileListLockPath = path.resolve(__dirname, "..", "list-lock.yaml")
 
-    static writeCover(comic: Comic): Promise<boolean> {
+    static writeCover(extension: Extension, comic: Comic): Promise<boolean> {
         return new Promise((resolve, reject) => {
             if (typeof comic.thumb === "undefined")
                 resolve(true)
@@ -22,11 +22,14 @@ export default class Info {
             cloudscraper({
                 uri: comic.thumb,
                 method: "GET",
-                encoding: null
+                encoding: null,
+                headers: {
+                    "Referer": extension.httpReferer
+                }
             }).then(async fill => {
                 const type = bufferType(fill)
                 const filepath = path.join(utils
-                    .storagePath(comic), "cover" + (type?.extension || ".jpg"))
+                    .storagePath(extension, comic), "cover" + (type?.extension || ".jpg"))
 
                 fs.writeFileSync(filepath, fill)
                 resolve(true)
@@ -34,9 +37,9 @@ export default class Info {
         })
     }
 
-    static writeDetail(comic: Comic): Promise<boolean> {
+    static writeDetail(extension: Extension, comic: Comic): Promise<boolean> {
         return new Promise((resolve, reject) => {
-            const filepath = path.join(utils.storagePath(comic), "details.json")
+            const filepath = path.join(utils.storagePath(extension, comic), "details.json")
             const detail = {
                 title: comic.title,
                 author: comic.author,
@@ -46,8 +49,8 @@ export default class Info {
                 status: comic.status
             }
 
-            if (!utils.storageMaker(comic))
-                reject(new Error("Storage maker failed: " + utils.storagePath(comic)))
+            if (!utils.storageMaker(extension, comic))
+                reject(new Error("Storage maker failed: " + utils.storagePath(extension, comic)))
 
             try {
                 fs.writeFileSync(filepath, JSON.stringify(detail, null, 2))
@@ -58,9 +61,9 @@ export default class Info {
         })
     }
 
-    static writeComicInfo(comic: Comic, chapter: ChapterEntry): Promise<boolean> {
+    static writeComicInfo(extension: Extension, comic: Comic, chapter: ChapterEntry): Promise<boolean> {
         return new Promise((resolve, reject) => {
-            const filepath = path.join(utils.storageChapPath(comic, chapter), "ComicInfo.xml")
+            const filepath = path.join(utils.storageChapPath(extension, comic, chapter), "ComicInfo.xml")
             const xml = xmlbuilder.create("ComicInfo")
                 .ele({
                     Series: "",

@@ -1,6 +1,32 @@
 import fs from "fs"
 import path from "path"
-import { ChapterEntry, Comic } from "./extenstion"
+import { ChapterEntry, Comic, Extension } from './extenstion';
+
+export function rmdirs(directoryPath: string) {
+    if (fs.existsSync(directoryPath)){
+        fs.readdirSync(directoryPath).map((file, index) => {
+            const curPath = path.join(directoryPath, file)
+
+            if (fs.lstatSync(curPath).isDirectory())
+                rmdirs(curPath)
+            else
+                fs.unlinkSync(curPath)
+        })
+
+        fs.rmdirSync(directoryPath)
+    }
+}
+
+export function ucfirst(title: string): string {
+    let pieces = title.split(" ")
+
+    for (let i = 0; i < pieces.length; ++i) {
+        const firstChar = pieces[i].charAt(0).toUpperCase()
+        pieces[i] = firstChar + pieces[i].substring(1).toLowerCase()
+    }
+
+    return pieces.join(" ")
+}
 
 export function urlScheme(url: string): string {
     if (!url.startsWith("http")) {
@@ -28,16 +54,16 @@ export function chapName(chapter: ChapterEntry): string {
     return prefix + chapter.chap
 }
 
-export function storagePath(comic: Comic): string {
-    return path.join(path.dirname(__dirname), "storage", comic.seo)
+export function storagePath(extension: Extension, comic: Comic): string {
+    return path.join(path.dirname(__dirname), "storage", extension.directoryStorage, comic.seo)
 }
 
-export function storageChapPath(comic: Comic, chapter: ChapterEntry): string {
-    return path.join(storagePath(comic), chapName(chapter))
+export function storageChapPath(extension: Extension, comic: Comic, chapter: ChapterEntry): string {
+    return path.join(storagePath(extension, comic), chapName(chapter))
 }
 
-export function storageMaker(comic: Comic): boolean {
-    const stPath = storagePath(comic)
+export function storageMaker(extension: Extension, comic: Comic): boolean {
+    const stPath = storagePath(extension, comic)
 
     if (!fs.existsSync(stPath) && typeof fs.mkdirSync(stPath, { recursive: true }) === "undefined")
         return false
@@ -45,8 +71,8 @@ export function storageMaker(comic: Comic): boolean {
     return true
 }
 
-export function storageChapMaker(comic: Comic, chapter: ChapterEntry): boolean {
-    const chapPath = storageChapPath(comic, chapter)
+export function storageChapMaker(extension: Extension, comic: Comic, chapter: ChapterEntry): boolean {
+    const chapPath = storageChapPath(extension, comic, chapter)
 
     if (!fs.existsSync(chapPath) && typeof fs.mkdirSync(chapPath, { recursive: true }) === "undefined")
         return false
@@ -55,6 +81,8 @@ export function storageChapMaker(comic: Comic, chapter: ChapterEntry): boolean {
 }
 
 export default {
+    rmdirs: rmdirs,
+    ucfirst: ucfirst,
     urlScheme: urlScheme,
     urlFilename: urlFilename,
     chapName: chapName,

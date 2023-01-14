@@ -7,6 +7,7 @@ export type ResultRegex = RegexOptions | RegExp
 export abstract class Extension {
     abstract httpBaseUrl: string
     abstract httpReferer: string
+    abstract directoryStorage: string
 
     abstract chapterTitleRegex(): ResultRegex
     abstract chapterThumbRegex(): ResultRegex
@@ -15,7 +16,7 @@ export abstract class Extension {
 
     abstract infoAuthorRegex(): ResultRegex
     abstract infoStatusRegex(): ResultRegex
-    abstract infoKindListRegex(): ResultRegex
+    abstract infoGenreListRegex(): ResultRegex
     abstract infoDescriptionRegex(): ResultRegex
     abstract infoSeoUrlRegex(): ResultRegex
 
@@ -25,11 +26,27 @@ export abstract class Extension {
     abstract imageListRegex(): ResultRegex
     abstract imageEntryRegex(): ImageResultRegex
 
+    titleReplace(title: string): string {
+        return title
+    }
+
+    genreListReplace(genres: string[]): string[] {
+        return genres
+    }
+
+    imageListDecrypt(source: string, list: string): string {
+        return list
+    }
+
     authorReplaceRegex(): ResultRegex | undefined {
         return
     }
 
-    imageEntryBlock(url: string): boolean {
+    imageEntryFilter(url: string): boolean {
+        return true
+    }
+
+    imageEntryAllow(url: string): boolean {
         return true
     }
 

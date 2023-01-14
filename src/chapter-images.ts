@@ -23,15 +23,20 @@ export default class ChapterImages {
                 source = source.replace(/[\r\n]+/g," ")
                             .replace(/[']+/g, "\"")
 
-                const list = RegexDestructured.valueOf(source, extension.imageListRegex())
+                const list = extension.imageListDecrypt(source,
+                    RegexDestructured.valueOf(source, extension.imageListRegex()))
                     extension.onImageListMatch(comic, chapter, list)
 
-                const images = RegexDestructured.imageForEachRegex(list, extension.imageEntryRegex())
-                    extension.onImageEntryMatch(comic, chapter, images)
+                const images = RegexDestructured.imageForEachRegex(list,
+                    extension.imageEntryRegex()).filter(image => {
+                        return extension.imageEntryFilter(image.original)
+                    })
+
+                extension.onImageEntryMatch(comic, chapter, images)
 
                 if (typeof images.length === "undefined" || images.length <= 0)
                     reject(new Error("Not found list image in chapter: " + chapter.uri))
-                else if (!utils.storageChapMaker(comic, chapter))
+                else if (!utils.storageChapMaker(extension, comic, chapter))
                     reject(new Error("Storage maker chap failed: " + chapter.chap))
                 else
                     resolve(images)
@@ -63,7 +68,7 @@ export default class ChapterImages {
             else if (num.length <= 2)
                 num = `0${num}`
 
-            const filepath = path.join(utils.storageChapPath(comic, chapter), num + format)
+            const filepath = path.join(utils.storageChapPath(extension, comic, chapter), num + format)
 
             res.data.pipe(fs.createWriteStream(filepath))
                 .on("error", () => reject(new Error("Write image failed: " + filepath)))
@@ -78,7 +83,7 @@ export default class ChapterImages {
         chapter: ChapterEntry): Promise<boolean>
     {
         return new Promise((resolve, reject) => {
-            const dirpath = utils.storageChapPath(comic, chapter)
+            const dirpath = utils.storageChapPath(extension, comic, chapter)
 
             extension.onRenumberImageProcess(dirpath)
             resolve(true)

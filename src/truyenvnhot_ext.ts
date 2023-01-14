@@ -27,6 +27,7 @@ const IMAGE_BLOCKS = [
 export default class TruyenVnHot extends Extension {
     httpBaseUrl: string = "https://truyenvnhot.net"
     httpReferer: string = "https://truyenvnhot.net"
+    directoryStorage: string = "truyenvnhot"
 
     chapterTitleRegex(): ResultRegex {
         return /<h1 class="name font-15x font-bold">(.+?)<\/h1>/g }
@@ -46,7 +47,7 @@ export default class TruyenVnHot extends Extension {
     infoStatusRegex(): ResultRegex {
         return /<div class="status mb-3">.+?<\/span>\s*(.+?)<\/div>/g }
 
-    infoKindListRegex(): ResultRegex {
+    infoGenreListRegex(): ResultRegex {
         return /<div class="genre mb-3">(.+?)<\/div>/g }
 
     infoDescriptionRegex(): ResultRegex {
@@ -66,7 +67,7 @@ export default class TruyenVnHot extends Extension {
     }
 
     imageListRegex(): ResultRegex {
-        return /<div class="chapter-content.+?<\/a>\s*<\/div>(.+?)<div class="aligncenter">/g }
+        return /<div class="chapter-content.+?<\/a>\s*<\/div>(.+?)<\/div>/g }
 
     imageEntryRegex(): ImageResultRegex {
         return {
@@ -82,7 +83,7 @@ export default class TruyenVnHot extends Extension {
         return author == AUTHOR_STATUS_UPDATING
     }
 
-    imageEntryBlock(url: string): boolean {
+    imageEntryAllow(url: string): boolean {
         const filter = IMAGE_BLOCKS.filter(value => {
             return url.endsWith(value)
         }) || []

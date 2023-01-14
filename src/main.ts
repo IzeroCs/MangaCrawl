@@ -3,6 +3,8 @@ import Info from "./info"
 import Comics from "./comics"
 import ComicChapters from "./comic-chapters"
 import ChapterImages from "./chapter-images"
+import utils from "./utils"
+import fs from "fs"
 
 (async () => {
     const listCache = Info.readList()
@@ -19,68 +21,74 @@ import ChapterImages from "./chapter-images"
         if (typeof comics.item.ignore !== "undefined" && comics.item.ignore === true) {
             console.log(colors.blue("Status: ") + colors.grey("Ignore Manga Request"))
         } else {
-            const comic = await ComicChapters.listChapterRequest(comics.http,
-                comics.extension, comics.item.url)
+            try {
+                const comic = await ComicChapters.listChapterRequest(comics.http,
+                    comics.extension, comics.item.url)
 
-            if (typeof comic !== "undefined") {
-                console.log(colors.blue("Status: ") + colors.cyan("WriteDetail"))
-                await Info.writeDetail(comic)
-                console.log(colors.blue("Status: ") + colors.cyan("WriteCover"))
-                await Info.writeCover(comic)
+                if (typeof comic !== "undefined") {
+                    console.log(colors.blue("Status: ") + colors.cyan("WriteDetail"))
+                    await Info.writeDetail(comics.extension, comic)
+                    console.log(colors.blue("Status: ") + colors.cyan("WriteCover"))
+                    await Info.writeCover(comics.extension, comic)
 
-                let chapter
-                let hasChapterNew = false
+                    let chapter
+                    let hasChapterNew = false
 
-                for (let j = 0; j < comic.chapters.length; ++j) {
-                    chapter = comic.chapters[j]
+                    for (let j = 0; j < comic.chapters.length; ++j) {
+                        chapter = comic.chapters[j]
 
-                    if (typeof chapter.chap === "undefined" ||
-                        chapter.chap == -1 || chapter.chap > comics.item.chap)
-                    {
-                        let logRequestStr = colors.blue("Status: ") +
-                            colors.green("Request list image chap ") +
-                            colors.magenta.bold(chapter.chap.toString()) +
-                            colors.cyan("/") + colors.red.bold(comic.chapters[comic
-                                .chapters.length - 1].chap.toString()) +
-                            colors.cyan(" => ") + colors.yellow.bold("$current") +
-                            colors.cyan("/") + colors.red.bold("$total") + colors.cyan(" images")
+                        if (typeof chapter.chap === "undefined" ||
+                            chapter.chap == -1 || chapter.chap > comics.item.chap)
+                        {
+                            let logRequestStr = colors.blue("Status: ") +
+                                colors.green("Request list image chap ") +
+                                colors.magenta.bold(chapter.chap.toString()) +
+                                colors.cyan("/") + colors.red.bold(comic.chapters[comic
+                                    .chapters.length - 1].chap.toString()) +
+                                colors.cyan(" => ") + colors.yellow.bold("$current") +
+                                colors.cyan("/") + colors.red.bold("$total") + colors.cyan(" images")
 
-                        process.stdout.write(logRequestStr
-                            .replace("$current", "0")
-                            .replace("$total", "0"))
+                            process.stdout.write(logRequestStr
+                                .replace("$current", "0")
+                                .replace("$total", "0"))
 
-                        const images = await ChapterImages.listImageRequest(comics.extension,
-                            comic, chapter)
+                            const images = await ChapterImages.listImageRequest(comics.extension,
+                                comic, chapter)
 
-                        logRequestStr = logRequestStr.replace("$total",
-                            images.length.toString())
+                            logRequestStr = logRequestStr.replace("$total",
+                                images.length.toString())
 
-                        hasChapterNew = true
-                        await Info.writeComicInfo(comic, chapter)
+                            hasChapterNew = true
+                            await Info.writeComicInfo(comics.extension, comic, chapter)
 
-                        for (let k = 0; k < images.length; ++k) {
-                            if (comics.extension.imageEntryBlock(images[k].original)) {
-                                await ChapterImages.downloadImage(comics.extension,
-                                    comic, chapter, images[k])
+                            for (let k = 0; k < images.length; ++k) {
+                                if (comics.extension.imageEntryAllow(images[k].original)) {
+                                    await ChapterImages.downloadImage(comics.extension,
+                                        comic, chapter, images[k])
+                                }
+
+                                process.stdout.clearLine(0)
+                                process.stdout.cursorTo(0)
+                                process.stdout.write(logRequestStr.replace("$current", (k + 1).toString()))
                             }
 
-                            process.stdout.clearLine(0)
-                            process.stdout.cursorTo(0)
-                            process.stdout.write(logRequestStr.replace("$current", (k + 1).toString()))
+                            process.stdout.write("\n")
+                            listCache[i].chap = chapter.chap
+                            await Info.writeListLock(listCache)
                         }
-
-                        process.stdout.write("\n")
-                        listCache[i].chap = chapter.chap
-                        await Info.writeListLock(listCache)
                     }
-                }
 
-                if (hasChapterNew)
-                    console.log(colors.blue("End: ") + colors.green("There's a new chapter"))
-                else
-                    console.log(colors.blue("End: ") + colors.gray("No new chapters yet"))
-            } else {
-                console.error(colors.blue("Status: ") + colors.red("Error request list chapter"))
+                    if (hasChapterNew) {
+                        console.log(colors.blue("End: ") + colors.green("There's a new chapter"))
+                    } else {
+                        utils.rmdirs(utils.storagePath(comics.extension, comic))
+                        console.log(colors.blue("End: ") + colors.gray("No new chapters yet"))
+                    }
+                } else {
+                    console.error(colors.blue("Status: ") + colors.red("Error request list chapter"))
+                }
+            } catch (e: any) {
+                console.error(colors.red("\nError: ") + colors.gray(e.message))
             }
         }
 

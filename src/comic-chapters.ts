@@ -21,7 +21,8 @@ export default class ComicChapters {
                 source = source.replace(/[\r\n]+/g," ")
                             .replace("'", "\"")
 
-                const title = RegexDestructured.valueOf(source, extension.chapterTitleRegex())
+                const title = extension.titleReplace(RegexDestructured.valueOf(source,
+                    extension.chapterTitleRegex()))
                     extension.onComicTitleMatch(title)
 
                 const thumb = RegexDestructured.valueOf(source, extension.chapterThumbRegex())
@@ -39,8 +40,8 @@ export default class ComicChapters {
                 const status = RegexDestructured.valueOf(info, extension.infoStatusRegex())
                     extension.onInfoStatusMatch(status)
 
-                const kind = RegexDestructured.valueOf(info, extension.infoKindListRegex())
-                    extension.onInfoGenreMatch(kind)
+                const genre = RegexDestructured.valueOf(info, extension.infoGenreListRegex())
+                    extension.onInfoGenreMatch(genre)
 
                 const desc = RegexDestructured.valueOf(source, extension.infoDescriptionRegex())
                     extension.onInfoDescriptionMatch(desc)
@@ -48,30 +49,33 @@ export default class ComicChapters {
                 const seo = RegexDestructured.valueOf(url, extension.infoSeoUrlRegex())
                     extension.onInfoSeoMatch(seo)
 
-                const genre = RegexDestructured.genreForEachRegex(kind, extension.genreEntryRegex())
-                    extension.onGenreMatch(genre)
+                const genres = extension.genreListReplace(RegexDestructured.genreForEachRegex(genre,
+                    extension.genreEntryRegex()))
+                    extension.onGenreMatch(genres)
 
                 const chapters = RegexDestructured.chapterForEachRegex(list, extension.chapEntryRegex())
                     extension.onChaptersMatch(chapters)
 
-                genre.sort((a: string, b: string) => (a > b ? 1 : -1))
+                genres.sort((a: string, b: string) => (a > b ? 1 : -1))
                 chapters.sort((a: ChapterEntry, b: ChapterEntry) => (a.chap > b.chap ? 1 : -1))
 
                 if (typeof chapters.length === "undefined" || chapters.length <= 0) {
                     reject(new Error("Not found list chapter in url " + url))
                 } else {
-                    let authorValue = author
+                    let authorValue = author.trim()
                     let statusValue = extension.comicStatus(status)
 
-                    if (typeof extension.authorReplaceRegex !== "undefined")
-                        authorValue = RegexDestructured.replace(author, extension.authorReplaceRegex() as ResultRegex)
+                    if (typeof extension.authorReplaceRegex() !== "undefined") {
+                        authorValue = RegexDestructured.replace(author,
+                            extension.authorReplaceRegex() as ResultRegex)
+                    }
 
                     if (extension.isAuthorStatusUpdating(authorValue))
                         authorValue = ""
 
                     resolve({
                         http: http, title: title, thumb: utils.urlScheme(thumb), author: authorValue,
-                        writer: authorValue, penciller: authorValue, inker: authorValue, genre: genre,
+                        writer: authorValue, penciller: authorValue, inker: authorValue, genre: genres,
                         chapters: chapters, seo: seo, status: statusValue, description: desc
                     })
                 }
