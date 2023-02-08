@@ -81,7 +81,7 @@ import fs from "fs"
                     if (hasChapterNew) {
                         console.log(colors.blue("End: ") + colors.green("There's a new chapter"))
                     } else {
-                        utils.rmdirs(utils.storagePath(comics.extension, comic))
+                        utils.rmdirs(utils.storageExtensionPath(comics.extension, comic))
                         console.log(colors.blue("End: ") + colors.gray("No new chapters yet"))
                     }
                 } else {

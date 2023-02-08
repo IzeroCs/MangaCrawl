@@ -5,7 +5,8 @@
   "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon",
+    "dev": "nodemon --watch src --watch dist -e js,ts --exec \"ts-node\" ./src/main.ts",
+    "zip": "nodemon --watch src/compress.ts -e ts --exec \"ts-node\" ./src/compress.ts",
     "build": "tsc"
   },
   "author": "",
@@ -28,9 +29,11 @@
     "yaml": "^2.2.1"
   },
   "devDependencies": {
+    "@types/adm-zip": "^0.5.0",
     "@types/node": "^18.11.5",
     "@types/qs": "^6.9.7",
     "@types/request-promise": "^4.1.48",
+    "adm-zip": "^0.5.10",
     "concurrently": "^7.6.0",
     "nodemon": "^2.0.20",
     "ts-node": "^10.9.1",

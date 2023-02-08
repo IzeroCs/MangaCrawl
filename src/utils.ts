@@ -54,16 +54,20 @@ export function chapName(chapter: ChapterEntry): string {
     return prefix + chapter.chap
 }
 
-export function storagePath(extension: Extension, comic: Comic): string {
-    return path.join(path.dirname(__dirname), "storage", extension.directoryStorage, comic.seo)
+export function storagePath(): string {
+    return path.join(path.dirname(__dirname), "storage")
+}
+
+export function storageExtensionPath(extension: Extension, comic: Comic): string {
+    return path.join(storagePath(), extension.directoryStorage, comic.seo)
 }
 
 export function storageChapPath(extension: Extension, comic: Comic, chapter: ChapterEntry): string {
-    return path.join(storagePath(extension, comic), chapName(chapter))
+    return path.join(storageExtensionPath(extension, comic), chapName(chapter))
 }
 
 export function storageMaker(extension: Extension, comic: Comic): boolean {
-    const stPath = storagePath(extension, comic)
+    const stPath = storageExtensionPath(extension, comic)
 
     if (!fs.existsSync(stPath) && typeof fs.mkdirSync(stPath, { recursive: true }) === "undefined")
         return false
@@ -81,13 +85,14 @@ export function storageChapMaker(extension: Extension, comic: Comic, chapter: Ch
 }
 
 export default {
-    rmdirs: rmdirs,
-    ucfirst: ucfirst,
-    urlScheme: urlScheme,
-    urlFilename: urlFilename,
-    chapName: chapName,
-    storagePath: storagePath,
-    storageMaker: storageMaker,
-    storageChapPath: storageChapPath,
-    storageChapMaker: storageChapMaker
+    rmdirs,
+    ucfirst,
+    urlScheme,
+    urlFilename,
+    chapName,
+    storagePath,
+    storageExtensionPath,
+    storageMaker,
+    storageChapPath,
+    storageChapMaker
 }

@@ -29,7 +29,7 @@ export default class Info {
             }).then(async fill => {
                 const type = bufferType(fill)
                 const filepath = path.join(utils
-                    .storagePath(extension, comic), "cover" + (type?.extension || ".jpg"))
+                    .storageExtensionPath(extension, comic), "cover" + (type?.extension || ".jpg"))
 
                 fs.writeFileSync(filepath, fill)
                 resolve(true)
@@ -39,7 +39,7 @@ export default class Info {
 
     static writeDetail(extension: Extension, comic: Comic): Promise<boolean> {
         return new Promise((resolve, reject) => {
-            const filepath = path.join(utils.storagePath(extension, comic), "details.json")
+            const filepath = path.join(utils.storageExtensionPath(extension, comic), "details.json")
             const detail = {
                 title: comic.title,
                 author: comic.author,
@@ -50,7 +50,7 @@ export default class Info {
             }
 
             if (!utils.storageMaker(extension, comic))
-                reject(new Error("Storage maker failed: " + utils.storagePath(extension, comic)))
+                reject(new Error("Storage maker failed: " + utils.storageExtensionPath(extension, comic)))
 
             try {
                 fs.writeFileSync(filepath, JSON.stringify(detail, null, 2))
