@@ -9,7 +9,7 @@
     "zip": "nodemon --watch src/compress.ts -e ts --exec \"ts-node\" ./src/compress.ts",
     "build": "tsc"
   },
-  "author": "",
+  "author": "IzeroCs",
   "license": "ISC",
   "dependencies": {
     "@types/crypto-js": "^4.1.1",
