@@ -7,6 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon --watch src --watch dist -e js,ts --exec \"ts-node\" ./src/main.ts",
     "zip": "nodemon --watch src/compress.ts -e ts --exec \"ts-node\" ./src/compress.ts",
+    "down": "nodemon --watch src/down.ts -e ts --exec \"ts-node\" ./src/down.ts",
     "build": "tsc"
   },
   "author": "IzeroCs",
