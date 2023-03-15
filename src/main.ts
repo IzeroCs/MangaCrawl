@@ -4,7 +4,6 @@ import Comics from "./comics"
 import ComicChapters from "./comic-chapters"
 import ChapterImages from "./chapter-images"
 import utils from "./utils"
-import fs from "fs"
 
 (async () => {
     const listCache = Info.readList()
@@ -38,8 +37,7 @@ import fs from "fs"
                         chapter = comic.chapters[j]
 
                         if (typeof chapter.chap === "undefined" ||
-                            chapter.chap == -1 || chapter.chap > comics.item.chap)
-                        {
+                            chapter.chap == -1 || chapter.chap > comics.item.chap) {
                             let logRequestStr = colors.blue("Status: ") +
                                 colors.green("Request list image chap ") +
                                 colors.magenta.bold(chapter.chap.toString()) +

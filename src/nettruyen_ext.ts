@@ -11,39 +11,49 @@ const COMIC_STATUS_COMPLETED = "Hoàn thành"
 const COMIC_STATUS_ONGOING = "Đang tiến hành"
 
 export default class NetTruyenExt extends Extension {
-    httpBaseUrl: string = "https://www.nettruyenme.com"
-    httpReferer: string = "https://www.nettruyenme.com"
+    httpBaseUrl: string = "https://netruyenco.vn"
+    httpReferer: string = "https://netruyenco.vn"
     directoryStorage: string = "nettruyen"
 
     chapterTitleRegex(): ResultRegex {
-        return /<h1 class="title-detail">(.+?)<\/h1>/g }
+        return /<h1 class="title-detail">(.+?)<\/h1>/g
+    }
 
     chapterThumbRegex(): ResultRegex {
-        return /<div class="detail-info">.+?<div class="col-xs-4 col-image">.+?src="(.+?)".+?<\/div>/g }
+        return /<div class="detail-info">.+?<div class="col-xs-4 col-image">.+?src="(.+?)".+?<\/div>/g
+    }
 
     chapterInfoRegex(): ResultRegex {
-        return /<div class="detail-info">.+?<ul class="list-info">(.+?)<\/ul>/g }
+        return /<div class="detail-info">.+?<ul class="list-info">(.+?)<\/ul>/g
+    }
 
     chapterListRegex(): ResultRegex {
-        return /<div class="list-chapter" id="nt_listchapter">.+?<nav>.*?<ul>(.+?)<\/ul>/g }
+        return /<div class="list-chapter" id="nt_listchapter">.+?<nav>.*?<ul>(.+?)<\/ul>/g
+    }
 
     infoAuthorRegex(): ResultRegex {
-        return /<li class="author.+?<p class="col-xs-8">(.+?)<\/p>/g }
+        return /<li class="author.+?<p class="col-xs-8">(.+?)<\/p>/g
+    }
 
     infoStatusRegex(): ResultRegex {
-        return /<li class="status.+?<p class="col-xs-8">(.+?)<\/p>/g }
+        return /<li class="status.+?<p class="col-xs-8">(.+?)<\/p>/g
+    }
 
     infoGenreListRegex(): ResultRegex {
-        return /<li class="kind.+?<p class="col-xs-8">(.+?)<\/p>/g }
+        return /<li class="kind.+?<p class="col-xs-8">(.+?)<\/p>/g
+    }
 
     infoDescriptionRegex(): ResultRegex {
-        return /<div class="detail-content"><p.+?>(.+?)<\/p>/g }
+        return /<div class="detail-content"><p.+?>(.+?)<\/p>/g
+    }
 
     infoSeoUrlRegex(): ResultRegex {
-        return /\/([a-zA-Z0-9\-\_\.]+)(-\d*)$/gi }
+        return /\/([a-zA-Z0-9\-\_\.]+)(-\d*)$/gi
+    }
 
     genreEntryRegex(): ResultRegex {
-        return /<a href=.+?>(.+?)<\/a>/g }
+        return /<a href=.+?>(.+?)<\/a>/g
+    }
 
     chapEntryRegex(): ChapterResultRegex {
         return {
@@ -53,7 +63,8 @@ export default class NetTruyenExt extends Extension {
     }
 
     imageListRegex(): ResultRegex {
-        return /<div class="reading-detail box_doc">(.+?)<div class="container">/g }
+        return /<div class="reading-detail box_doc">(.+?)<div class="container">/g
+    }
 
     imageEntryRegex(): ImageResultRegex {
         return {
@@ -63,7 +74,8 @@ export default class NetTruyenExt extends Extension {
     }
 
     authorReplaceRegex(): ResultRegex {
-        return /<a href=.+?>(.+?)<\/a>/gi }
+        return /<a href=.+?>(.+?)<\/a>/gi
+    }
 
     isAuthorStatusUpdating(author: string): boolean {
         return author == AUTHOR_STATUS_UPDATING
