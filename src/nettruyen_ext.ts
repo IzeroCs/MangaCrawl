@@ -11,8 +11,8 @@ const COMIC_STATUS_COMPLETED = "Hoàn thành"
 const COMIC_STATUS_ONGOING = "Đang tiến hành"
 
 export default class NetTruyenExt extends Extension {
-    httpBaseUrl: string = "https://www.nettruyenvt.com"
-    httpReferer: string = "https://www.nettruyenvt.com"
+    httpBaseUrl: string = "https://www.nettruyenplus.com"
+    httpReferer: string = "https://www.nettruyenplus.com"
     directoryStorage: string = "nettruyen"
 
     chapterTitleRegex(): ResultRegex {
