@@ -18,8 +18,8 @@ const IMAGE_BLOCKS = [
 ]
 
 export default class TruyenVnHot extends Extension {
-    httpBaseUrl: string = "https://truyenvnhot.tv"
-    httpReferer: string = "https://truyenvnhot.tv"
+    httpBaseUrl: string = "https://truyenvnmoi.net"
+    httpReferer: string = "https://truyenvnmoi.net"
     directoryStorage: string = "truyenvnhot"
 
     chapterTitleRegex(): ResultRegex {
@@ -97,7 +97,7 @@ export default class TruyenVnHot extends Extension {
     }
 
     static isUrlExtension(url: string): boolean {
-        return url.match(/^(http|https):\/\/(www.)?truyenvnhot.[a-z]+/gi) !== null
+        return url.match(/^(http|https):\/\/(www.)?truyenvnmoi.[a-z]+/gi) !== null
     }
 
     comicStatus(status: string): ComicStatus {
